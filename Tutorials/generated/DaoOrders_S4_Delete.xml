@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ROOT>
+  -- DaoOrders_S4_Delete
+  -- 2018/10/3 日立 太郎
+  DELETE FROM
+    [Orders]
+  <WHERE>
+    WHERE
+       [OrderID] = @OrderID
+  </WHERE>
+</ROOT>

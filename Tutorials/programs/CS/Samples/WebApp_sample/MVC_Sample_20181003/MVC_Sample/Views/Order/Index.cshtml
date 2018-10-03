@@ -1,0 +1,55 @@
+﻿@using System.Data;
+
+@model MVC_Sample.Logic.Common.OrderReturnValue
+
+@{
+    ViewBag.Title = "Order List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@* スクリプト・セクション（RenderSection("HeaderScriptsSection", required: true)に出力されます） *@
+@section HeaderScriptsSection{
+    <!-- Head 部の section -->
+}
+
+<fieldset>
+    <legend>List of Orders</legend>
+    @{
+        // コントローラーから渡された Model の内容から、グリッドを生成する
+        var grid = new WebGrid(Model.Orders.AsEnumerable(), canPage: true, rowsPerPage: 10, selectionFieldName: "selectedRow");
+        grid.Pager(WebGridPagerModes.NextPrevious);
+    }
+    <div id="gridContent">
+        @* Model に格納された値をグリッドに表示 *@
+        @grid.GetHtml(
+            tableStyle: "webGrid",
+            headerStyle: "header",
+            alternatingRowStyle: "alt",
+            selectedRowStyle: "select",
+            columns: grid.Columns(
+                grid.Column("Select", format: @<text>@Html.ActionLink("Select", "Order", new { OrderId = item.Value["OrderID"] }) </text>),
+                               grid.Column("OrderID", format: (item) => item.GetSelectLink(item.Value["OrderID"].ToString())),
+                               grid.Column("CompanyName", format: (item) => item.Value["CompanyName"].ToString()),
+                               grid.Column("ContactName", format: (item) => item.Value["ContactName"].ToString(), style: "description"),
+                               grid.Column("LastName", format: (item) => item.Value["EmployeeLastName"].ToString()),
+                               grid.Column("OrderDate", format: (item) => item.Value["OrderDate"].ToString(), style: "description")
+                           )
+                       )
+        @if (grid.HasSelection)
+        {
+            // 行が選択されたら、選択された行の値を表示
+            DataRow order = (DataRow)grid.Rows[grid.SelectedIndex].Value;
+            <b>OrderID</b>@order["OrderID"].ToString()<br />
+            <b>CompanyName</b> @order["CompanyName"].ToString()<br />
+            <b>ContactName</b>@order["ContactName"].ToString()<br />
+            <b>FirstName</b>@order["EmployeeFirstName"].ToString()<br />
+            <b>LastName</b>@order["EmployeeLastName"].ToString()<br />
+            <b>OrderDate</b>@order["OrderDate"].ToString()<br />
+        }
+    </div>
+</fieldset>
+
+@* スクリプト・セクション（RenderSection("FooterScriptsSection", required: true)に出力されます） *@
+@section FooterScriptsSection{
+    <!-- Footer 部の section -->
+}

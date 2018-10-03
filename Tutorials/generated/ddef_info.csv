@@ -1,0 +1,5 @@
+﻿テーブル名,カラム情報～
+Order Details,OrderID,ProductID,
+,UnitPrice,Quantity,Discount,
+Orders,OrderID,
+,CustomerID,EmployeeID,OrderDate,RequiredDate,ShippedDate,ShipVia,Freight,ShipName,ShipAddress,ShipCity,ShipRegion,ShipPostalCode,ShipCountry,

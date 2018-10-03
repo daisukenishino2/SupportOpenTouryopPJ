@@ -1,0 +1,32 @@
+﻿@model MVC_Sample.Logic.Common.OrderReturnValue
+
+@{
+    ViewBag.Title = "Order Details and Order Information Summary";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@* スクリプト・セクション（RenderSection("HeaderScriptsSection", required: true)に出力されます） *@
+@section HeaderScriptsSection{
+    <!-- Head 部の section -->
+}
+
+<div id="orderInfo" style="width: 100%">
+    @* 部分ビューとして、注文情報を表示する *@
+    @Html.Partial("_OrderInfo")
+</div>
+
+<div id="orderDetailsInfo" style="width: 100%">
+    @* 部分ビューとして、注文詳細情報を表示する *@
+    @Html.Partial("_OrderDetailsInfo")
+</div>
+
+@* サーバにPOSTするためのFORMを作成 *@
+@using (Html.BeginForm("UpdateDatabase", "Order", FormMethod.Post, new { id = "form3" }))
+{
+    <input type="submit" id="btnUpdateDb" value="Update to Database" />
+}
+
+@* スクリプト・セクション（RenderSection("FooterScriptsSection", required: true)に出力されます） *@
+@section FooterScriptsSection{
+    <!-- Footer 部の section -->
+}

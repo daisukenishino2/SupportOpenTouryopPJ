@@ -1,0 +1,5 @@
+﻿テーブル名,カラムDB型情報～
+Order Details,int,int,
+,money,smallint,real,
+Orders,int,
+,nchar,int,datetime,datetime,datetime,int,money,nvarchar,nvarchar,nvarchar,nvarchar,nvarchar,nvarchar,

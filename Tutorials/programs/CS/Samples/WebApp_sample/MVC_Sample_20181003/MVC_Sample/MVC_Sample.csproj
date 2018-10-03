@@ -183,13 +183,21 @@
     <Compile Include="Controllers\Crud2Controller.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PingController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Logic\Business\LayerB.cs" />
+    <Compile Include="Logic\Business\OrdersLogic.cs" />
+    <Compile Include="Logic\Common\OrderParameterValue.cs" />
+    <Compile Include="Logic\Common\OrderReturnValue.cs" />
     <Compile Include="Logic\Common\TestParameterValue.cs" />
     <Compile Include="Logic\Common\TestReturnValue.cs" />
+    <Compile Include="Logic\Dao\ConsolidatedLayerD.cs" />
+    <Compile Include="Logic\Dao\DaoOrders.cs" />
+    <Compile Include="Logic\Dao\DaoOrder_Details.cs" />
     <Compile Include="Logic\Dao\DaoShippers.cs" />
     <Compile Include="Logic\Dao\LayerD.cs" />
     <Compile Include="Models\ViewModels\BaseViewModel.cs" />
@@ -274,6 +282,11 @@
     <Content Include="Views\Crud2\Index.cshtml" />
     <Content Include="Views\Crud2\_ChartView.cshtml" />
     <Content Include="Views\Crud2\_MessageView.cshtml" />
+    <Content Include="Views\Menu\Index.cshtml" />
+    <Content Include="Views\Order\Index.cshtml" />
+    <Content Include="Views\Order\Order.cshtml" />
+    <Content Include="Views\Order\_OrderInfo.cshtml" />
+    <Content Include="Views\Order\_OrderDetailsInfo.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

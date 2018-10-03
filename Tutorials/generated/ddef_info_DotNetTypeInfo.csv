@@ -1,0 +1,5 @@
+﻿テーブル名,カラム.NET型情報～
+Order Details,System.Int32,System.Int32,
+,System.Decimal,System.Int16,System.Single,
+Orders,System.Int32,
+,System.String,System.Int32,System.DateTime,System.DateTime,System.DateTime,System.Int32,System.Decimal,System.String,System.String,System.String,System.String,System.String,System.String,
