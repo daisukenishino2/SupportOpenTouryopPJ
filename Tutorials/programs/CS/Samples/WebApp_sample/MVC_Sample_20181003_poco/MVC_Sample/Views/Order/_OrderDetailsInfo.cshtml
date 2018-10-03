@@ -1,0 +1,90 @@
+﻿@using System.Data;
+
+@model MVC_Sample.Logic.Common.OrderReturnValue
+
+@* スクリプト・セクション（RenderSection("HeaderScriptsSection", required: true)に出力されます） *@
+@section HeaderScriptsSection{
+    <!-- Head 部の section -->
+}
+
+@if (Model.OrderDetails != null && Model.OrderID != 0)
+{
+    // 注文詳細情報を表示するためのグリッドを定義 (注文詳細情報をModelから取得)
+    var grid = new WebGrid(Model.OrderDetails.AsEnumerable(), canPage: true, rowsPerPage: 10, selectionFieldName: "selectedRow");
+    grid.Pager(WebGridPagerModes.NextPrevious);
+
+    <div id="gridContentdetailUpdate">
+        <fieldset>
+            <legend>Order Details</legend>
+            @* 注文詳細情報を表示 *@
+            @grid.GetHtml(tableStyle: "webGrid",
+                headerStyle: "header",
+                alternatingRowStyle: "alt",
+                selectedRowStyle: "select",
+                // 以下、列の定義
+                columns: grid.Columns(
+                    grid.Column("OrderID", format: (item) => {
+                        // _OrderInfo.cshtmlのときと同様、グリッドの行を選択するためのリンクのURLを固定する処理を行う
+                        string queryStrings = item.GetSelectUrl().Substring(item.GetSelectUrl().IndexOf("?") + 1);
+                        string OrderID = item.Value["OrderID"].ToString();
+                        RouteValueDictionary queryDic = new RouteValueDictionary();
+                        queryDic.Add("id", OrderID);
+                        foreach (string query in queryStrings.Split('&'))
+                        {
+                            queryDic.Add(query.Split('=')[0], query.Split('=')[1]);
+                        }
+                        return Html.ActionLink(OrderID, "GetOrderDetails", queryDic);
+                    }),
+                    grid.Column("ProductID", format: (item) => item.Value["ProductID"].ToString()),
+                    grid.Column("Discount", format: (item) => item.Value["Discount"].ToString(), style: "description"),
+                    grid.Column("UnitPrice", format: (item) => item.Value["UnitPrice"].ToString()),
+                    grid.Column("Quantity", format: (item) => item.Value["Quantity"].ToString(), style: "description")
+                )
+            )
+            @if (grid.HasSelection)
+            {
+                System.Data.DataRow orderDetails = (System.Data.DataRow)grid.SelectedRow.Value;
+                <fieldset>
+                    <legend>Update Order Details</legend>
+                    @* 注文詳細情報を修正するための入力フォームを作成 *@
+                    @* BeginFormメソッドの引数に、リクエストを送るコントローラー名、アクション名を指定可能 *@
+                    @using (Html.BeginForm("UpdateModel_OrderDetails", "Order", FormMethod.Post, new { id = "form2" }))
+                    {
+                        <table>
+                            <tr>
+                                <td><b>OrderID</b></td>
+                                <td>@Html.TextBox("txtOrderID", @orderDetails["OrderID"], new { @readonly = "readonly" })</td>
+                            </tr>
+                            <tr>
+                                <td><b>ProductID</b></td>
+                                <td>@Html.TextBox("txtProductID", @orderDetails["ProductID"], new { @readonly = "readonly" })</td>
+                            </tr>
+                            <tr>
+                                <td><b>Discount</b></td>
+                                <td>@Html.TextBox("txtDiscount", @orderDetails["Discount"])</td>
+                            </tr>
+                            <tr>
+                                <td><b>UnitPrice</b></td>
+                                <td>@Html.TextBox("txtUnitPrice", @orderDetails["UnitPrice"])</td>
+                            </tr>
+                            <tr>
+                                <td><b>Quantity</b></td>
+                                <td>@Html.TextBox("txtQuantity", @orderDetails["Quantity"])</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <input id="btnUpdate" value="Update" style="width: 50%;" type="submit">
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                </fieldset>
+            }
+        </fieldset>
+    </div>
+}
+
+@* スクリプト・セクション（RenderSection("FooterScriptsSection", required: true)に出力されます） *@
+@section FooterScriptsSection{
+    <!-- Footer 部の section -->
+}
