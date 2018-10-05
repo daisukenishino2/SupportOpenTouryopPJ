@@ -1,9 +1,13 @@
-﻿//    Open棟梁
+﻿// Open棟梁
 using Touryo.Infrastructure.Business.Dao;
+using Touryo.Infrastructure.Public.Dto;
 using Touryo.Infrastructure.Public.Db;
 
 // 引数・戻り値クラス
 using MVC_Sample.Logic.Common;
+using MVC_Sample.Models.ViewModels;
+
+using System.Data;
 
 namespace MVC_Sample.Logic.Dao
 {
@@ -20,14 +24,12 @@ namespace MVC_Sample.Logic.Dao
             CmnDao dao = new CmnDao(this.Dam);
             dao.SQLFileName = "SelectOrders.sql";
 
-            // 結果格納用の DataTable
-            System.Data.DataTable table = new System.Data.DataTable();
+            // DB から注文情報一覧を取得し、戻り値クラスに注文情報一覧を格納し、B 層クラスに返す
+            using (IDataReader dr = dao.ExecSelect_DR())
+            {
+                returnValue.Orders = DataToPoco.DataReaderToList<OrderViweModel>(dr);
+            }
 
-            // DB から注文情報一覧を取得し、DataTable に格納する
-            dao.ExecSelectFill_DT(table);
-
-            // 戻り値クラスに注文情報一覧を格納し、B 層クラスに返す
-            returnValue.Orders = table;
             return returnValue;
         }
 
@@ -53,8 +55,8 @@ namespace MVC_Sample.Logic.Dao
             orderDetailsDao.D2_Select(orderDetailsTable);
 
             // 戻り値クラスに結果セットを格納し、B 層クラスに返す
-            returnValue.Orders = orderTable;
-            returnValue.OrderDetails = orderDetailsTable;
+            returnValue.Orders = DataToPoco.DataTableToList<OrderViweModel>(orderTable);
+            returnValue.OrderDetails = DataToPoco.DataTableToList<Order_DetailViweModel>(orderDetailsTable);
             return returnValue;
         }
 
@@ -67,42 +69,39 @@ namespace MVC_Sample.Logic.Dao
             DaoOrders orderDao = new DaoOrders(this.Dam);
             DaoOrder_Details orderDetailsDao = new DaoOrder_Details(this.Dam);
 
-            // 注文情報、注文詳細情報を格納するための DataTable
-            System.Data.DataTable orderTable = orderParameter.Orders;
-            System.Data.DataTable orderDetailsTable = orderParameter.OrderDetails;
-
             // レコードの状態を確認し、修正されていたら DB を更新する
-            if (orderTable.Rows[0].RowState == System.Data.DataRowState.Modified)
+            OrderViweModel ovm = orderParameter.Orders[0];
+            if (ovm.Modified == true)
             {
                 // 注文情報（サマリ）更新用のパタメータを設定する
-                orderDao.PK_OrderID = orderTable.Rows[0]["OrderId"];
-                orderDao.Set_OrderDate_forUPD = orderTable.Rows[0]["OrderDate"];
-                orderDao.Set_RequiredDate_forUPD = orderTable.Rows[0]["RequiredDate"];
-                orderDao.Set_ShippedDate_forUPD = orderTable.Rows[0]["ShippedDate"];
-                orderDao.Set_ShipVia_forUPD = orderTable.Rows[0]["ShipVia"];
-                orderDao.Set_Freight_forUPD = orderTable.Rows[0]["Freight"];
-                orderDao.Set_ShipName_forUPD = orderTable.Rows[0]["ShipName"];
-                orderDao.Set_ShipAddress_forUPD = orderTable.Rows[0]["ShipAddress"];
-                orderDao.Set_ShipCity_forUPD = orderTable.Rows[0]["ShipCity"];
-                orderDao.Set_ShipRegion_forUPD = orderTable.Rows[0]["ShipRegion"];
-                orderDao.Set_ShipPostalCode_forUPD = orderTable.Rows[0]["ShipPostalCode"];
-                orderDao.Set_ShipCountry_forUPD = orderTable.Rows[0]["ShipCountry"];
+                orderDao.PK_OrderID = ovm.OrderID.Value;
+                orderDao.Set_OrderDate_forUPD = ovm.OrderDate.Value;
+                orderDao.Set_RequiredDate_forUPD = ovm.RequiredDate.Value;
+                orderDao.Set_ShippedDate_forUPD = ovm.ShippedDate.Value;
+                orderDao.Set_ShipVia_forUPD = ovm.ShipVia.Value;
+                orderDao.Set_Freight_forUPD = ovm.Freight.Value;
+                orderDao.Set_ShipName_forUPD = ovm.ShipName;
+                orderDao.Set_ShipAddress_forUPD = ovm.ShipAddress;
+                orderDao.Set_ShipCity_forUPD = ovm.ShipCity;
+                orderDao.Set_ShipRegion_forUPD = ovm.ShipRegion;
+                orderDao.Set_ShipPostalCode_forUPD = ovm.ShipPostalCode;
+                orderDao.Set_ShipCountry_forUPD = ovm.ShipCountry;
 
                 // 注文情報（サマリ）を更新する
                 orderDao.D3_Update();
             }
 
-            foreach (System.Data.DataRow row in orderDetailsTable.Rows)
+            foreach (Order_DetailViweModel odvm in orderParameter.OrderDetails)
             {
                 // レコードの状態を確認し、修正されていたら DB を更新する
-                if (row.RowState == System.Data.DataRowState.Modified)
+                if (odvm.Modified == true)
                 {
                     // 注文情報（明細）更新用のパラメータを設定する
-                    orderDetailsDao.PK_OrderID = row["OrderId"];
-                    orderDetailsDao.PK_ProductID = row["ProductId"];
-                    orderDetailsDao.Set_UnitPrice_forUPD = row["UnitPrice"];
-                    orderDetailsDao.Set_Quantity_forUPD = row["Quantity"];
-                    orderDetailsDao.Set_Discount_forUPD = row["Discount"];
+                    orderDetailsDao.PK_OrderID = odvm.OrderID.Value;
+                    orderDetailsDao.PK_ProductID = odvm.ProductID.Value;
+                    orderDetailsDao.Set_UnitPrice_forUPD = odvm.UnitPrice.Value;
+                    orderDetailsDao.Set_Quantity_forUPD = odvm.Quantity.Value;
+                    orderDetailsDao.Set_Discount_forUPD = odvm.Discount.Value;
 
                     // 注文情報（明細）を更新する
                     orderDetailsDao.D3_Update();

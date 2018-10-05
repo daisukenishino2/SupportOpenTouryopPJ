@@ -1,5 +1,9 @@
-﻿using Touryo.Infrastructure.Business.Util;
+﻿using System.Collections.Generic;
+
+using Touryo.Infrastructure.Business.Util;
 using Touryo.Infrastructure.Business.Common;
+
+using MVC_Sample.Models.ViewModels;
 
 namespace MVC_Sample.Logic.Common
 {
@@ -9,10 +13,10 @@ namespace MVC_Sample.Logic.Common
         public string OrderId;
 
         /// <summary>注文情報（サマリ）</summary>
-        public System.Data.DataTable Orders;
+        public List<OrderViweModel> Orders;
 
         /// <summary>注文情報（明細）</summary>
-        public System.Data.DataTable OrderDetails;
+        public List<Order_DetailViweModel> OrderDetails;
 
         public OrderParameterValue(string screenId, string controlId, string methodName, string actionType, MyUserInfo user) : base(screenId, controlId, methodName, actionType, user)
         {

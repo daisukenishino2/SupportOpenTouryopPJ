@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Web.Mvc;
 
 // Business Logics of Touryo framework
@@ -23,11 +24,12 @@ using Touryo.Infrastructure.Framework.Transmission;
 using Touryo.Infrastructure.Public.Db;
 
 // External Business application Logic nameapces
-using System.Data;
 using MVC_Sample.Logic.Business;
 using MVC_Sample.Logic.Common;
 using MVC_Sample.Logic.Dao;
+
 using MVC_Sample.Models;
+using MVC_Sample.Models.ViewModels;
 
 namespace MVC_Sample.Controllers
 {
@@ -99,9 +101,9 @@ namespace MVC_Sample.Controllers
         {
             // セッションから、注文サマリ情報、注文詳細情報を取得し、Model クラスに格納
             OrderReturnValue retValue = new OrderReturnValue();
-            retValue.OrderDetails = (System.Data.DataTable)Session["OrderDetails"];
-            retValue.Orders = (System.Data.DataTable)Session["Orders"];
             retValue.OrderID = Convert.ToInt32(id);
+            retValue.Orders = (List<OrderViweModel>)Session["Orders"];
+            retValue.OrderDetails = (List<Order_DetailViweModel>)Session["OrderDetails"];
             return View("Order", retValue);
         }
 
@@ -110,53 +112,59 @@ namespace MVC_Sample.Controllers
         {
             // 入力内容をもとに、Model の値を修正
             OrderReturnValue retValue = new OrderReturnValue();
-            retValue.OrderDetails = (System.Data.DataTable)Session["OrderDetails"];
-            System.Data.DataRow row = retValue.OrderDetails.Select(
-                "OrderID='" + txtOrderID + "' AND ProductID ='" + txtProductID + "'").FirstOrDefault();
-            row["Discount"] = Convert.ToSingle(txtDiscount);
-            row["UnitPrice"] = Convert.ToDecimal(txtUnitPrice);
-            row["Quantity"] = Convert.ToInt16(txtQuantity);
 
-            // Session から、Order テーブルのレコードを復元し、Model に格納
-            retValue.Orders = (System.Data.DataTable)Session["Orders"];
             retValue.OrderID = Convert.ToInt32(txtOrderID);
+            retValue.Orders = (List<OrderViweModel>)Session["Orders"];
+            retValue.OrderDetails = (List<Order_DetailViweModel>)Session["OrderDetails"];
+            Order_DetailViweModel odvm = retValue.OrderDetails.Where(
+                o => o.OrderID == int.Parse(txtOrderID) 
+                && o.ProductID == int.Parse(txtProductID)).FirstOrDefault();
+
+            odvm.Discount = Convert.ToSingle(txtDiscount);
+            odvm.UnitPrice = Convert.ToDecimal(txtUnitPrice);
+            odvm.Quantity = Convert.ToInt16(txtQuantity);
+            odvm.Modified = true; // 更新済みフラグ
 
             // ビューを表示する
             return View("Order", retValue);
         }
 
         [HttpPost]
-        public ActionResult UpdateModel_OrderSummary(string txtOrderID, string txtCustomerID, string txtEmployeeID, string txtOrderDate,
+        public ActionResult UpdateModel_OrderSummary(
+            string txtOrderID, string txtCustomerID, string txtEmployeeID, string txtOrderDate,
             string txtRequiredDate, string txtShippedDate, string txtShipVia, string txtFreight, string txtShipName, string txtShipAddress,
             string txtShipCity, string txtShipRegion, string txtShipPostalCode, string txtShipCountry)
         {
             OrderReturnValue retValue = new OrderReturnValue();
             if (txtCustomerID != null)
             {
+                retValue.OrderID = 0;
+
                 // 入力内容をもとに、Model の値を修正
-                retValue.Orders = (DataTable)Session["Orders"];
-                DataRow rows = retValue.Orders.Select("OrderID='" + txtOrderID + "'").FirstOrDefault();
-                rows["OrderDate"] = txtOrderDate;
-                rows["RequiredDate"] = txtRequiredDate;
-                rows["ShippedDate"] = txtShippedDate;
-                rows["ShipVia"] = txtShipVia;
-                rows["Freight"] = txtFreight;
-                rows["ShipName"] = txtShipName;
-                rows["ShipAddress"] = txtShipAddress;
-                rows["ShipCity"] = txtShipCity;
-                rows["ShipRegion"] = txtShipRegion;
-                rows["ShipPostalCode"] = txtShipPostalCode;
-                rows["ShipCountry"] = txtShipCountry;
+                retValue.Orders = (List<OrderViweModel>)Session["Orders"];
+                OrderViweModel ovm = retValue.Orders.Where(
+                    o => o.OrderID == int.Parse(txtOrderID)).FirstOrDefault();
+
+                ovm.OrderDate = DateTime.Parse(txtOrderDate);
+                ovm.RequiredDate = DateTime.Parse(txtRequiredDate);
+                ovm.ShippedDate = DateTime.Parse(txtShippedDate);
+                ovm.ShipVia = int.Parse(txtShipVia);
+                ovm.Freight = decimal.Parse(txtFreight);
+                ovm.ShipName = txtShipName;
+                ovm.ShipAddress = txtShipAddress;
+                ovm.ShipCity = txtShipCity;
+                ovm.ShipRegion = txtShipRegion;
+                ovm.ShipPostalCode = txtShipPostalCode;
+                ovm.ShipCountry = txtShipCountry;
 
                 // Session から、Order Details テーブルのレコードを復元し、Model に格納
-                retValue.OrderDetails = (DataTable)Session["OrderDetails"];
-                retValue.OrderID = 0;
+                retValue.OrderDetails = (List<Order_DetailViweModel>)Session["OrderDetails"];
             }
             else
             {
                 // Session から、テーブルのレコードを復元し、Model に格納
-                retValue.Orders = (DataTable)Session["Orders"];
-                retValue.OrderDetails = (DataTable)Session["OrderDetails"];
+                retValue.Orders = (List<OrderViweModel>)Session["Orders"];
+                retValue.OrderDetails = (List<Order_DetailViweModel>)Session["OrderDetails"];
             }
 
             // ビューを表示する
@@ -167,8 +175,8 @@ namespace MVC_Sample.Controllers
         public ActionResult UpdateDatabase()
         {
             // 修正内容を含む、注文情報を Session から取得
-            DataTable orderTable = (DataTable)Session["Orders"];
-            DataTable orderDetailTable = (DataTable)Session["OrderDetails"];
+            List<OrderViweModel> ovms = (List<OrderViweModel>)Session["Orders"];
+            List<Order_DetailViweModel> odvms = (List<Order_DetailViweModel>)Session["OrderDetails"];
 
             // Model(業務ロジッククラス) に渡すパラメータを定義
             OrderParameterValue param
@@ -178,20 +186,26 @@ namespace MVC_Sample.Controllers
                     "UpdateOrder",
                     "SQL", //string.Empty,
                     new MyUserInfo("user01", this.UserInfo.IPAddress));
-            param.Orders = orderTable;
-            param.OrderDetails = orderDetailTable;
+            param.Orders = ovms;
+            param.OrderDetails = odvms;
 
             // Model(業務ロジッククラス) のメソッドを実行
             OrdersLogic logic = new OrdersLogic();
             OrderReturnValue retValue = (OrderReturnValue)logic.DoBusinessLogic(param);
 
             // Model の修正内容を確定させる
-            orderTable.AcceptChanges();
-            orderDetailTable.AcceptChanges();
+            foreach (OrderViweModel ovm in ovms)
+            {
+                ovm.Modified = false;
+            }
+            foreach (Order_DetailViweModel odvm in odvms)
+            {
+                odvm.Modified = false;
+            }
 
             // ビューを表示する
-            retValue.Orders = orderTable;
-            retValue.OrderDetails = orderDetailTable;
+            retValue.Orders = ovms;
+            retValue.OrderDetails = odvms;
             return View("Order", retValue);
         }
     }

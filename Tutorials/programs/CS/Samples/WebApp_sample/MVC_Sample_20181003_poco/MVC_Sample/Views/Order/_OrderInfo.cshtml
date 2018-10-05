@@ -1,4 +1,4 @@
-﻿@using System.Data;
+﻿@using MVC_Sample.Models.ViewModels;
 
 @model MVC_Sample.Logic.Common.OrderReturnValue
 
@@ -25,40 +25,40 @@
             selectedRowStyle: "select",
             // 以下、列の定義
             columns: gridorder.Columns(
-                gridorder.Column("Details", format: @<text>@Html.ActionLink("Details", "GetOrderDetails", new { id = item.Value["OrderID"] }) </text>),
-                                  gridorder.Column("OrderID", format: (item) =>
-                                  {
-                             // 既定では、WebGrid では、GetSelectLink や GetSelectUrl メソッドにより、グリッドの
-                             // 行を選択するためのリンクを取得できる。このとき、リンクの URL には、「直前に実行した
-                             // アクションメソッド名」が使用される。このため、アクションの実行のたびに URL が変わって
-                             // しまうので、この URL を固定する処理を行う必要がある。
-                             string queryStrings = item.GetSelectUrl().Substring(item.GetSelectUrl().IndexOf("?") + 1);
-                                      string OrderID = item.Value["OrderID"].ToString();
-                                      RouteValueDictionary queryDic = new RouteValueDictionary();
-                                      foreach (string query in queryStrings.Split('&'))
-                                      {
-                                          queryDic.Add(query.Split('=')[0], query.Split('=')[1]);
-                                      }
-                                      return Html.ActionLink(OrderID, "GetOrderDetails", queryDic);
-                                  }),
-                                  gridorder.Column("CustomerID", format: (item) => item.Value["CustomerID"].ToString()),
-                                  gridorder.Column("EmployeeID", format: (item) => item.Value["EmployeeID"].ToString(), style: "description"),
-                                  gridorder.Column("OrderDate", format: (item) => item.Value["OrderDate"].ToString()),
-                                  gridorder.Column("RequiredDate", format: (item) => item.Value["RequiredDate"].ToString(), style: "description"),
-                                  gridorder.Column("ShippedDate", format: (item) => item.Value["ShippedDate"].ToString()),
-                                  gridorder.Column("ShipVia", format: (item) => item.Value["ShipVia"].ToString(), style: "description"),
-                                  gridorder.Column("Freight", format: (item) => item.Value["Freight"].ToString()),
-                                  gridorder.Column("ShipName", format: (item) => item.Value["ShipName"].ToString(), style: "description"),
-                                  gridorder.Column("ShipAddress", format: (item) => item.Value["ShipAddress"].ToString()),
-                                  gridorder.Column("ShipCity", format: (item) => item.Value["ShipCity"].ToString(), style: "description"),
-                                  gridorder.Column("ShipRegion", format: (item) => item.Value["ShipRegion"].ToString()),
-                                  gridorder.Column("ShipPostalCode", format: (item) => item.Value["ShipPostalCode"].ToString(), style: "description"),
-                                  gridorder.Column("ShipCountry", format: (item) => item.Value["ShipCountry"].ToString())
-                              )
-                          )
+                gridorder.Column("Details", format: @<text>@Html.ActionLink("Details", "GetOrderDetails", new { id = item.OrderID }) </text>),
+                                       gridorder.Column("OrderID", format: (item) =>
+                                       {
+                                          // 既定では、WebGrid では、GetSelectLink や GetSelectUrl メソッドにより、グリッドの
+                                          // 行を選択するためのリンクを取得できる。このとき、リンクの URL には、「直前に実行した
+                                          // アクションメソッド名」が使用される。このため、アクションの実行のたびに URL が変わって
+                                          // しまうので、この URL を固定する処理を行う必要がある。
+                                          string queryStrings = item.GetSelectUrl().Substring(item.GetSelectUrl().IndexOf("?") + 1);
+                                                   string OrderID = item.OrderID.ToString();
+                                                   RouteValueDictionary queryDic = new RouteValueDictionary();
+                                                   foreach (string query in queryStrings.Split('&'))
+                                                   {
+                                                       queryDic.Add(query.Split('=')[0], query.Split('=')[1]);
+                                                   }
+                                                   return Html.ActionLink(OrderID, "GetOrderDetails", queryDic);
+                                       }),
+                                       gridorder.Column("CustomerID", format: (item) => item.CustomerID.ToString()),
+                                       gridorder.Column("EmployeeID", format: (item) => item.EmployeeID.ToString(), style: "description"),
+                                       gridorder.Column("OrderDate", format: (item) => item.OrderDate.ToString()),
+                                       gridorder.Column("RequiredDate", format: (item) => item.RequiredDate.ToString(), style: "description"),
+                                       gridorder.Column("ShippedDate", format: (item) => item.ShippedDate.ToString()),
+                                       gridorder.Column("ShipVia", format: (item) => item.ShipVia, style: "description"),
+                                       gridorder.Column("Freight", format: (item) => item.Freight.ToString()),
+                                       gridorder.Column("ShipName", format: (item) => item.ShipName, style: "description"),
+                                       gridorder.Column("ShipAddress", format: (item) => item.ShipAddress),
+                                       gridorder.Column("ShipCity", format: (item) => item.ShipCity, style: "description"),
+                                       gridorder.Column("ShipRegion", format: (item) => item.ShipRegion),
+                                       gridorder.Column("ShipPostalCode", format: (item) => item.ShipPostalCode, style: "description"),
+                                       gridorder.Column("ShipCountry", format: (item) => item.ShipCountry)
+                                   )
+                               )
         @if (gridorder.HasSelection)
         {
-            System.Data.DataRow order = (System.Data.DataRow)gridorder.SelectedRow.Value;
+            OrderViweModel order = (OrderViweModel)gridorder.SelectedRow.Value;
             <fieldset>
                 <legend>Update Order Table</legend>
                 @* 注文情報を修正するための入力フォームを作成 *@
@@ -68,45 +68,45 @@
                     <table>
                         <tr>
                             <td><b>OrderID</b></td>
-                            <td>@Html.TextBox("txtOrderID", @order["OrderID"], new { @readonly = "readonly" })</td>
+                            <td>@Html.TextBox("txtOrderID", @order.OrderID, new { @readonly = "readonly" })</td>
                             <td><b>CustomerID</b></td>
-                            <td>@Html.TextBox("txtCustomerID", @order["CustomerID"], new { @readonly = "readonly" })</td>
+                            <td>@Html.TextBox("txtCustomerID", @order.CustomerID, new { @readonly = "readonly" })</td>
                         </tr>
                         <tr>
                             <td><b>EmployeeID</b></td>
-                            <td>@Html.TextBox("txtEmployeeID", @order["EmployeeID"], new { @readonly = "readonly" })</td>
+                            <td>@Html.TextBox("txtEmployeeID", @order.EmployeeID, new { @readonly = "readonly" })</td>
                             <td><b>OrderDate</b></td>
-                            <td>@Html.TextBox("txtOrderDate", @order["OrderDate"])</td>
+                            <td>@Html.TextBox("txtOrderDate", @order.OrderDate)</td>
                         </tr>
                         <tr>
                             <td><b>RequiredDate</b></td>
-                            <td>@Html.TextBox("txtRequiredDate", @order["RequiredDate"])</td>
+                            <td>@Html.TextBox("txtRequiredDate", @order.RequiredDate)</td>
                             <td><b>ShippedDate</b></td>
-                            <td>@Html.TextBox("txtShippedDate", @order["ShippedDate"])</td>
+                            <td>@Html.TextBox("txtShippedDate", @order.ShippedDate)</td>
                         </tr>
                         <tr>
                             <td><b>ShipVia</b></td>
-                            <td>@Html.TextBox("txtShipVia", @order["ShipVia"])</td>
+                            <td>@Html.TextBox("txtShipVia", @order.ShipVia)</td>
                             <td><b>Freight</b></td>
-                            <td>@Html.TextBox("txtFreight", @order["Freight"])</td>
+                            <td>@Html.TextBox("txtFreight", @order.Freight)</td>
                         </tr>
                         <tr>
                             <td><b>ShipName</b></td>
-                            <td>@Html.TextBox("txtShipName", @order["ShipName"])</td>
+                            <td>@Html.TextBox("txtShipName", @order.ShipName)</td>
                             <td><b>ShipAddress</b></td>
-                            <td>@Html.TextBox("txtShipAddress", @order["ShipAddress"])</td>
+                            <td>@Html.TextBox("txtShipAddress", @order.ShipAddress)</td>
                         </tr>
                         <tr>
                             <td><b>ShipCity</b></td>
-                            <td>@Html.TextBox("txtShipCity", @order["ShipCity"])</td>
+                            <td>@Html.TextBox("txtShipCity", @order.ShipCity)</td>
                             <td><b>ShipRegion</b></td>
-                            <td>@Html.TextBox("txtShipRegion", @order["ShipRegion"])</td>
+                            <td>@Html.TextBox("txtShipRegion", @order.ShipRegion)</td>
                         </tr>
                         <tr>
                             <td><b>ShipPostalCode</b></td>
-                            <td>@Html.TextBox("txtShipPostalCode", @order["ShipPostalCode"])</td>
+                            <td>@Html.TextBox("txtShipPostalCode", @order.ShipPostalCode)</td>
                             <td><b>ShipCountry</b></td>
-                            <td>@Html.TextBox("txtShipCountry", @order["ShipCountry"])</td>
+                            <td>@Html.TextBox("txtShipCountry", @order.ShipCountry)</td>
                         </tr>
                     </table>
                     <input type="submit" id="btnUpdateOrder" value="Update Order" />
