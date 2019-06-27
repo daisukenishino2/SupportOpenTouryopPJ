@@ -58,7 +58,7 @@
                                )
         @if (gridorder.HasSelection)
         {
-            OrderViweModel order = (OrderViweModel)gridorder.SelectedRow.Value;
+            //OrderViweModel order = (OrderViweModel)gridorder.SelectedRow.Value;
             <fieldset>
                 <legend>Update Order Table</legend>
                 @* 注文情報を修正するための入力フォームを作成 *@
@@ -68,45 +68,45 @@
                     <table>
                         <tr>
                             <td><b>OrderID</b></td>
-                            <td>@Html.TextBox("txtOrderID", @order.OrderID, new { @readonly = "readonly" })</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().OrderID, new { @readonly = "readonly" })</td>
                             <td><b>CustomerID</b></td>
-                            <td>@Html.TextBox("txtCustomerID", @order.CustomerID, new { @readonly = "readonly" })</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().CustomerID, new { @readonly = "readonly" })</td>
                         </tr>
                         <tr>
                             <td><b>EmployeeID</b></td>
-                            <td>@Html.TextBox("txtEmployeeID", @order.EmployeeID, new { @readonly = "readonly" })</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().EmployeeID, new { @readonly = "readonly" })</td>
                             <td><b>OrderDate</b></td>
-                            <td>@Html.TextBox("txtOrderDate", @order.OrderDate)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().OrderDate)</td>
                         </tr>
                         <tr>
                             <td><b>RequiredDate</b></td>
-                            <td>@Html.TextBox("txtRequiredDate", @order.RequiredDate)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().RequiredDate)</td>
                             <td><b>ShippedDate</b></td>
-                            <td>@Html.TextBox("txtShippedDate", @order.ShippedDate)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().ShippedDate)</td>
                         </tr>
                         <tr>
                             <td><b>ShipVia</b></td>
-                            <td>@Html.TextBox("txtShipVia", @order.ShipVia)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().ShipVia)</td>
                             <td><b>Freight</b></td>
-                            <td>@Html.TextBox("txtFreight", @order.Freight)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().Freight)</td>
                         </tr>
                         <tr>
                             <td><b>ShipName</b></td>
-                            <td>@Html.TextBox("txtShipName", @order.ShipName)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().ShipName)</td>
                             <td><b>ShipAddress</b></td>
-                            <td>@Html.TextBox("txtShipAddress", @order.ShipAddress)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().ShipAddress)</td>
                         </tr>
                         <tr>
                             <td><b>ShipCity</b></td>
-                            <td>@Html.TextBox("txtShipCity", @order.ShipCity)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().ShipCity)</td>
                             <td><b>ShipRegion</b></td>
-                            <td>@Html.TextBox("txtShipRegion", @order.ShipRegion)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().ShipRegion)</td>
                         </tr>
                         <tr>
                             <td><b>ShipPostalCode</b></td>
-                            <td>@Html.TextBox("txtShipPostalCode", @order.ShipPostalCode)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().ShipPostalCode)</td>
                             <td><b>ShipCountry</b></td>
-                            <td>@Html.TextBox("txtShipCountry", @order.ShipCountry)</td>
+                            <td>@Html.TextBoxFor(item => item.Orders.First().ShipCountry)</td>
                         </tr>
                     </table>
                     <input type="submit" id="btnUpdateOrder" value="Update Order" />

@@ -108,21 +108,21 @@ namespace MVC_Sample.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateModel_OrderDetails(string txtOrderID, string txtProductID, string txtDiscount, string txtUnitPrice, string txtQuantity)
+        public ActionResult UpdateModel_OrderDetails(Order_DetailViweModel model)
         {
             // 入力内容をもとに、Model の値を修正
             OrderReturnValue retValue = new OrderReturnValue();
 
-            retValue.OrderID = Convert.ToInt32(txtOrderID);
+            retValue.OrderID = (int)model.OrderID;
             retValue.Orders = (List<OrderViweModel>)Session["Orders"];
             retValue.OrderDetails = (List<Order_DetailViweModel>)Session["OrderDetails"];
             Order_DetailViweModel odvm = retValue.OrderDetails.Where(
-                o => o.OrderID == int.Parse(txtOrderID) 
-                && o.ProductID == int.Parse(txtProductID)).FirstOrDefault();
+                o => o.OrderID == (int)model.OrderID
+                && o.ProductID == (int)model.ProductID).FirstOrDefault();
 
-            odvm.Discount = Convert.ToSingle(txtDiscount);
-            odvm.UnitPrice = Convert.ToDecimal(txtUnitPrice);
-            odvm.Quantity = Convert.ToInt16(txtQuantity);
+            odvm.Discount = model.Discount;
+            odvm.UnitPrice = model.UnitPrice;
+            odvm.Quantity = model.Quantity;
             odvm.Modified = true; // 更新済みフラグ
 
             // ビューを表示する
@@ -130,32 +130,29 @@ namespace MVC_Sample.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateModel_OrderSummary(
-            string txtOrderID, string txtCustomerID, string txtEmployeeID, string txtOrderDate,
-            string txtRequiredDate, string txtShippedDate, string txtShipVia, string txtFreight, string txtShipName, string txtShipAddress,
-            string txtShipCity, string txtShipRegion, string txtShipPostalCode, string txtShipCountry)
+        public ActionResult UpdateModel_OrderSummary(OrderViweModel model)
         {
             OrderReturnValue retValue = new OrderReturnValue();
-            if (txtCustomerID != null)
+            if (model.CustomerID != null)
             {
                 retValue.OrderID = 0;
 
                 // 入力内容をもとに、Model の値を修正
                 retValue.Orders = (List<OrderViweModel>)Session["Orders"];
                 OrderViweModel ovm = retValue.Orders.Where(
-                    o => o.OrderID == int.Parse(txtOrderID)).FirstOrDefault();
+                    o => o.OrderID == model.OrderID).FirstOrDefault();
 
-                ovm.OrderDate = DateTime.Parse(txtOrderDate);
-                ovm.RequiredDate = DateTime.Parse(txtRequiredDate);
-                ovm.ShippedDate = DateTime.Parse(txtShippedDate);
-                ovm.ShipVia = int.Parse(txtShipVia);
-                ovm.Freight = decimal.Parse(txtFreight);
-                ovm.ShipName = txtShipName;
-                ovm.ShipAddress = txtShipAddress;
-                ovm.ShipCity = txtShipCity;
-                ovm.ShipRegion = txtShipRegion;
-                ovm.ShipPostalCode = txtShipPostalCode;
-                ovm.ShipCountry = txtShipCountry;
+                ovm.OrderDate = model.OrderDate;
+                ovm.RequiredDate = model.RequiredDate;
+                ovm.ShippedDate = model.ShippedDate;
+                ovm.ShipVia = model.ShipVia;
+                ovm.Freight = model.Freight;
+                ovm.ShipName = model.ShipName;
+                ovm.ShipAddress = model.ShipAddress;
+                ovm.ShipCity = model.ShipCity;
+                ovm.ShipRegion = model.ShipRegion;
+                ovm.ShipPostalCode = model.ShipPostalCode;
+                ovm.ShipCountry = model.ShipCountry;
 
                 // Session から、Order Details テーブルのレコードを復元し、Model に格納
                 retValue.OrderDetails = (List<Order_DetailViweModel>)Session["OrderDetails"];

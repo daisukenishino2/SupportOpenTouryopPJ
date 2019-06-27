@@ -43,7 +43,7 @@
             )
             @if (grid.HasSelection)
             {
-                Order_DetailViweModel @orderDetails = (Order_DetailViweModel)grid.SelectedRow.Value;
+                //Order_DetailViweModel @orderDetails = (Order_DetailViweModel)grid.SelectedRow.Value;
                 <fieldset>
                     <legend>Update Order Details</legend>
                     @* 注文詳細情報を修正するための入力フォームを作成 *@
@@ -53,24 +53,24 @@
                         <table>
                             <tr>
                                 <td><b>OrderID</b></td>
-                                <td>@Html.TextBox("txtOrderID", @orderDetails.OrderID, new { @readonly = "readonly" })</td>
+                                <td>@Html.TextBoxFor(item => item.OrderDetails.First().OrderID, new { @readonly = "readonly" })</td>
                             </tr>
                             <tr>
                                 <td><b>ProductID</b></td>
-                                <td>@Html.TextBox("txtProductID", @orderDetails.ProductID, new { @readonly = "readonly" })</td>
+                                <td>@Html.TextBoxFor(item => item.OrderDetails.First().ProductID, new { @readonly = "readonly" })</td>
                             </tr>
                             <tr>
                                 <td><b>Discount</b></td>
-                                <td>@Html.TextBox("txtDiscount", @orderDetails.Discount)</td>
+                                <td>@Html.TextBoxFor(item => item.OrderDetails.First().Discount)</td>
                             </tr>
                             <tr>
                                 <td><b>UnitPrice</b></td>
                                 <td>
-                                    @Html.TextBox("txtUnitPrice", @orderDetails.UnitPrice)</td>
+                                    @Html.TextBoxFor(item => item.OrderDetails.First().UnitPrice)</td>
                         </tr>
                         <tr>
                             <td><b>Quantity</b></td>
-                            <td>@Html.TextBox("txtQuantity", @orderDetails.Quantity)</td>
+                            <td>@Html.TextBoxFor(item => item.OrderDetails.First().Quantity)</td>
                         </tr>
                         <tr>
                             <td colspan="2">
