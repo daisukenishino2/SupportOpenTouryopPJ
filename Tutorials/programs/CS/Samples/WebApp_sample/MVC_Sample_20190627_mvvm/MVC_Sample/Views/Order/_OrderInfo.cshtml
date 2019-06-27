@@ -1,0 +1,122 @@
+﻿@using MVC_Sample.Models.ViewModels;
+
+@model MVC_Sample.Logic.Common.OrderReturnValue
+
+@{
+    // 注文情報を表示するためのグリッドを定義 (注文情報をModelから取得)
+    var gridorder = new WebGrid(Model.Orders.AsEnumerable(), canPage: true, rowsPerPage: 10, selectionFieldName: "selectedRow",
+        ajaxUpdateContainerId: "gridContentdetail", fieldNamePrefix: "g1", pageFieldName: "p1");
+    gridorder.Pager(WebGridPagerModes.NextPrevious);
+}
+
+@* スクリプト・セクション（RenderSection("HeaderScriptsSection", required: true)に出力されます） *@
+@section HeaderScriptsSection{
+    <!-- Head 部の section -->
+}
+
+<fieldset>
+    <legend>Order Information Summary</legend>
+    <div id="gridContentdetail">
+        @* 注文情報を表示 *@
+        @gridorder.GetHtml(
+            tableStyle: "webGrid",
+            headerStyle: "header",
+            alternatingRowStyle: "alt",
+            selectedRowStyle: "select",
+            // 以下、列の定義
+            columns: gridorder.Columns(
+                gridorder.Column("Details", format: @<text>@Html.ActionLink("Details", "GetOrderDetails", new { id = item.OrderID }) </text>),
+                                       gridorder.Column("OrderID", format: (item) =>
+                                       {
+                                          // 既定では、WebGrid では、GetSelectLink や GetSelectUrl メソッドにより、グリッドの
+                                          // 行を選択するためのリンクを取得できる。このとき、リンクの URL には、「直前に実行した
+                                          // アクションメソッド名」が使用される。このため、アクションの実行のたびに URL が変わって
+                                          // しまうので、この URL を固定する処理を行う必要がある。
+                                          string queryStrings = item.GetSelectUrl().Substring(item.GetSelectUrl().IndexOf("?") + 1);
+                                                   string OrderID = item.OrderID.ToString();
+                                                   RouteValueDictionary queryDic = new RouteValueDictionary();
+                                                   foreach (string query in queryStrings.Split('&'))
+                                                   {
+                                                       queryDic.Add(query.Split('=')[0], query.Split('=')[1]);
+                                                   }
+                                                   return Html.ActionLink(OrderID, "GetOrderDetails", queryDic);
+                                       }),
+                                       gridorder.Column("CustomerID", format: (item) => item.CustomerID.ToString()),
+                                       gridorder.Column("EmployeeID", format: (item) => item.EmployeeID.ToString(), style: "description"),
+                                       gridorder.Column("OrderDate", format: (item) => item.OrderDate.ToString()),
+                                       gridorder.Column("RequiredDate", format: (item) => item.RequiredDate.ToString(), style: "description"),
+                                       gridorder.Column("ShippedDate", format: (item) => item.ShippedDate.ToString()),
+                                       gridorder.Column("ShipVia", format: (item) => item.ShipVia, style: "description"),
+                                       gridorder.Column("Freight", format: (item) => item.Freight.ToString()),
+                                       gridorder.Column("ShipName", format: (item) => item.ShipName, style: "description"),
+                                       gridorder.Column("ShipAddress", format: (item) => item.ShipAddress),
+                                       gridorder.Column("ShipCity", format: (item) => item.ShipCity, style: "description"),
+                                       gridorder.Column("ShipRegion", format: (item) => item.ShipRegion),
+                                       gridorder.Column("ShipPostalCode", format: (item) => item.ShipPostalCode, style: "description"),
+                                       gridorder.Column("ShipCountry", format: (item) => item.ShipCountry)
+                                   )
+                               )
+        @if (gridorder.HasSelection)
+        {
+            OrderViweModel order = (OrderViweModel)gridorder.SelectedRow.Value;
+            <fieldset>
+                <legend>Update Order Table</legend>
+                @* 注文情報を修正するための入力フォームを作成 *@
+                @* BeginFormメソッドの引数に、リクエストを送るコントローラー名、アクション名を指定可能 *@
+                @using (Html.BeginForm("UpdateModel_OrderSummary", "Order", FormMethod.Post, new { id = "form1" }))
+                {
+                    <table>
+                        <tr>
+                            <td><b>OrderID</b></td>
+                            <td>@Html.TextBox("txtOrderID", @order.OrderID, new { @readonly = "readonly" })</td>
+                            <td><b>CustomerID</b></td>
+                            <td>@Html.TextBox("txtCustomerID", @order.CustomerID, new { @readonly = "readonly" })</td>
+                        </tr>
+                        <tr>
+                            <td><b>EmployeeID</b></td>
+                            <td>@Html.TextBox("txtEmployeeID", @order.EmployeeID, new { @readonly = "readonly" })</td>
+                            <td><b>OrderDate</b></td>
+                            <td>@Html.TextBox("txtOrderDate", @order.OrderDate)</td>
+                        </tr>
+                        <tr>
+                            <td><b>RequiredDate</b></td>
+                            <td>@Html.TextBox("txtRequiredDate", @order.RequiredDate)</td>
+                            <td><b>ShippedDate</b></td>
+                            <td>@Html.TextBox("txtShippedDate", @order.ShippedDate)</td>
+                        </tr>
+                        <tr>
+                            <td><b>ShipVia</b></td>
+                            <td>@Html.TextBox("txtShipVia", @order.ShipVia)</td>
+                            <td><b>Freight</b></td>
+                            <td>@Html.TextBox("txtFreight", @order.Freight)</td>
+                        </tr>
+                        <tr>
+                            <td><b>ShipName</b></td>
+                            <td>@Html.TextBox("txtShipName", @order.ShipName)</td>
+                            <td><b>ShipAddress</b></td>
+                            <td>@Html.TextBox("txtShipAddress", @order.ShipAddress)</td>
+                        </tr>
+                        <tr>
+                            <td><b>ShipCity</b></td>
+                            <td>@Html.TextBox("txtShipCity", @order.ShipCity)</td>
+                            <td><b>ShipRegion</b></td>
+                            <td>@Html.TextBox("txtShipRegion", @order.ShipRegion)</td>
+                        </tr>
+                        <tr>
+                            <td><b>ShipPostalCode</b></td>
+                            <td>@Html.TextBox("txtShipPostalCode", @order.ShipPostalCode)</td>
+                            <td><b>ShipCountry</b></td>
+                            <td>@Html.TextBox("txtShipCountry", @order.ShipCountry)</td>
+                        </tr>
+                    </table>
+                    <input type="submit" id="btnUpdateOrder" value="Update Order" />
+                }
+            </fieldset>
+        }
+    </div>
+</fieldset>
+
+@* スクリプト・セクション（RenderSection("FooterScriptsSection", required: true)に出力されます） *@
+@section FooterScriptsSection{
+    <!-- Footer 部の section -->
+}
